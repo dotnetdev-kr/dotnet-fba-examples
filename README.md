@@ -47,6 +47,13 @@ File-Based Application(FBA)은 .NET의 혁신적인 기능으로, 단일 C# 파�
 
 - **Python 3.x** (05-native-aot.py 실행 시)
   - Native AOT 라이브러리 호출 예제에 필요
+- **Java 17+** 및 **wget** (05-native-aot.java 실행 시)
+  - Java에서 Native AOT 라이브러리 호출 예제에 필요
+  - JNA(Java Native Access) 라이브러리 자동 다운로드
+- **GCC/Clang** (05-staticlib-c.c 컴파일 시)
+  - C 컴파일러 및 iconv 라이브러리
+  - macOS: Xcode Command Line Tools (`xcode-select --install`)
+  - Linux: `build-essential` 패키지
 - **OpenRouter API 키** (06-agui-server.cs 실행 시)
   - AI 에이전트 예제에 필요
   - [OpenRouter](https://openrouter.ai/)에서 무료 계정 생성 가능
@@ -278,29 +285,38 @@ chmod +x 04-avalonia.cs
 
 > 🎓 **학습 목표**: Native AOT 컴파일을 통한 네이티브 라이브러리 생성, 다른 언어와의 상호운용성
 
-Native AOT 컴파일을 통해 C# 코드를 네이티브 라이브러리로 변환하고 Python에서 호출하는 예제입니다. C#의 성능과 Python의 유연성을 결합하는 방법을 보여줍니다.
+Native AOT 컴파일을 통해 C# 코드를 네이티브 라이브러리로 변환하고 다양한 언어(Python, C)에서 호출하는 예제입니다. C#의 성능과 다른 언어의 유연성을 결합하는 방법을 보여줍니다.
 
 **핵심 개념:**
 
 - `#:property PublishAot=True` - Native AOT 컴파일 활성화
 - `#:property OutputType=Library` - 라이브러리로 빌드
+- `#:property NativeLib=Static` - 정적 라이브러리 생성
 - `#:property RuntimeIdentifier=osx-arm64` - 타겟 플랫폼 지정
 - `UnmanagedCallersOnly` 속성 - 네이티브 함수 노출
 - P/Invoke 역방향 (C#에서 네이티브로)
-- 언어 간 상호운용성 (C# ↔ Python)
+- 언어 간 상호운용성 (C# ↔ Python/C)
 - 유니코드 문자열 마샬링
+- iconv를 통한 UTF-8 ↔ UTF-16 변환
 
-- **`05-native-aot.cs`**: C# 네이티브 라이브러리 소스
-- **`05-native-aot.py`**: 네이티브 라이브러리를 호출하는 Python 스크립트
+#### 예제 파일
+
+- **`05-native-aot.cs`**: C# 네이티브 동적 라이브러리 소스 (.dylib)
+- **`05-native-aot.py`**: Python에서 동적 라이브러리 호출 예제
+- **`05-native-aot.java`**: Java에서 동적 라이브러리 호출 예제 (JNA 사용)
+- **`05-staticlib-aot.cs`**: C# 네이티브 정적 라이브러리 소스 (.a)
+- **`05-staticlib-c.c`**: C에서 동적 라이브러리 호출 예제
+
+#### 동적 라이브러리 (.dylib) 예제
 
 **빌드 방법:**
 
 ```bash
-# C# 코드를 네이티브 라이브러리로 컴파일
+# C# 코드를 네이티브 동적 라이브러리로 컴파일
 dotnet publish ./05-native-aot.cs
 ```
 
-**실행 방법:**
+**Python에서 사용:**
 
 ```bash
 # 실행 권한 부여
@@ -310,29 +326,70 @@ chmod +x 05-native-aot.py
 ./05-native-aot.py
 ```
 
+**C에서 사용:**
+
+```bash
+# 컴파일 및 실행
+gcc -o 05-staticlib-c 05-staticlib-c.c artifacts/05-native-aot/05-native-aot.dylib -Wl,-rpath,artifacts/05-native-aot -liconv
+./05-staticlib-c
+```
+
+**Java에서 사용:**
+
+```bash
+# JNA 라이브러리 다운로드 (최초 1회)
+wget -nc https://repo1.maven.org/maven2/net/java/dev/jna/jna/5.14.0/jna-5.14.0.jar
+
+# 컴파일
+javac -cp jna-5.14.0.jar 05-native-aot.java
+
+# 실행
+java -cp .:jna-5.14.0.jar NativeAotExample
+```
+
 **출력 예시:**
 
 ```text
-2025-11-26 21:34:56 Hello from Python!
-2025-11-26 21:34:56 Native AOT 호출 테스트
-2025-11-26 21:34:56 안녕하세요!
+Testing Native AOT library from Java
+======================================
+
+2025. 11. 26. 오후 11:39:18 Hello from Java!
+2025. 11. 26. 오후 11:39:18 Native AOT 호출 테스트
+2025. 11. 26. 오후 11:39:18 안녕하세요!
+
+All calls completed.
 ```
+
+#### 정적 라이브러리 (.a) 예제
+
+**빌드 방법:**
+
+```bash
+# C# 코드를 네이티브 정적 라이브러리로 컴파일
+dotnet publish ./05-staticlib-aot.cs
+```
+
+> ⚠️ **참고**: 정적 라이브러리는 .NET 런타임 종속성이 포함되지 않아 직접 링크 시 오류가 발생할 수 있습니다. 동적 라이브러리(.dylib) 사용을 권장합니다.
 
 **특징:**
 
 - UnmanagedCallersOnly 속성을 사용한 네이티브 함수 노출
-- Python ctypes를 통한 C# 라이브러리 호출
-- UTF-16 유니코드 문자열 전달 지원
+- Python ctypes, Java JNA, C에서 C# 라이브러리 호출
+- UTF-16 유니코드 문자열 전달 지원 (한글 포함)
+- iconv 라이브러리를 통한 간단한 문자 인코딩 변환 (C)
+- Java에서는 JNA를 통한 간편한 네이티브 라이브러리 접근
 - JIT 컴파일러 없이 빠른 시작 시간
 - 작은 배포 크기 (단일 네이티브 라이브러리)
 - .NET 런타임 불필요 (self-contained)
 
 **사용 사례:**
 
-- Python에 고성능 C# 라이브러리 통합
+- Python/Java/C 프로젝트에 고성능 C# 라이브러리 통합
 - 레거시 시스템과의 연동
 - 엣지 디바이스용 경량 라이브러리
 - 게임 엔진 플러그인
+- 임베디드 시스템용 네이티브 모듈
+- JVM 기반 애플리케이션에서 .NET 코드 활용
 
 ---
 

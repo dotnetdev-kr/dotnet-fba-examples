@@ -1,1 +1,15 @@
 artifacts
+
+# Java
+*.class
+jna-*.jar
+jna-*.jar.*
+
+# C
+05-staticlib-c
+*.o
+*.a
+*.dylib
+*.so
+*.dll
+*.lib
