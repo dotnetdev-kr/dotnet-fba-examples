@@ -50,6 +50,9 @@ File-Based Application(FBA)은 .NET의 혁신적인 기능으로, 단일 C# 파�
 - **Java 17+** 및 **wget** (05-native-aot.java 실행 시)
   - Java에서 Native AOT 라이브러리 호출 예제에 필요
   - JNA(Java Native Access) 라이브러리 자동 다운로드
+- **Node.js 18+** 및 **npm** (05-native-aot.js 실행 시)
+  - Node.js에서 Native AOT 라이브러리 호출 예제에 필요
+  - koffi 패키지 자동 설치
 - **GCC/Clang** (05-staticlib-c.c 컴파일 시)
   - C 컴파일러 및 iconv 라이브러리
   - macOS: Xcode Command Line Tools (`xcode-select --install`)
@@ -304,6 +307,7 @@ Native AOT 컴파일을 통해 C# 코드를 네이티브 라이브러리로 변�
 - **`05-native-aot.cs`**: C# 네이티브 동적 라이브러리 소스 (.dylib)
 - **`05-native-aot.py`**: Python에서 동적 라이브러리 호출 예제
 - **`05-native-aot.java`**: Java에서 동적 라이브러리 호출 예제 (JNA 사용)
+- **`05-native-aot.js`**: Node.js에서 동적 라이브러리 호출 예제 (koffi 사용)
 - **`05-staticlib-aot.cs`**: C# 네이티브 정적 라이브러리 소스 (.a)
 - **`05-staticlib-c.c`**: C에서 동적 라이브러리 호출 예제
 
@@ -347,15 +351,30 @@ javac -cp jna-5.14.0.jar 05-native-aot.java
 java -cp .:jna-5.14.0.jar NativeAotExample
 ```
 
+**Node.js에서 사용:**
+
+```bash
+# koffi 패키지 설치 (최초 1회)
+npm install koffi
+
+# 실행 권한 부여
+chmod +x 05-native-aot.js
+
+# 실행
+./05-native-aot.js
+# 또는
+node 05-native-aot.js
+```
+
 **출력 예시:**
 
 ```text
-Testing Native AOT library from Java
-======================================
+Testing Native AOT library from Node.js
+==========================================
 
-2025. 11. 26. 오후 11:39:18 Hello from Java!
-2025. 11. 26. 오후 11:39:18 Native AOT 호출 테스트
-2025. 11. 26. 오후 11:39:18 안녕하세요!
+2025. 11. 26. 오후 11:56:52 Hello from Node.js!
+2025. 11. 26. 오후 11:56:52 Native AOT 호출 테스트
+2025. 11. 26. 오후 11:56:52 안녕하세요!
 
 All calls completed.
 ```
@@ -374,22 +393,23 @@ dotnet publish ./05-staticlib-aot.cs
 **특징:**
 
 - UnmanagedCallersOnly 속성을 사용한 네이티브 함수 노출
-- Python ctypes, Java JNA, C에서 C# 라이브러리 호출
+- Python ctypes, Java JNA, Node.js koffi, C에서 C# 라이브러리 호출
 - UTF-16 유니코드 문자열 전달 지원 (한글 포함)
 - iconv 라이브러리를 통한 간단한 문자 인코딩 변환 (C)
-- Java에서는 JNA를 통한 간편한 네이티브 라이브러리 접근
+- Java JNA와 Node.js koffi를 통한 간편한 네이티브 라이브러리 접근
 - JIT 컴파일러 없이 빠른 시작 시간
 - 작은 배포 크기 (단일 네이티브 라이브러리)
 - .NET 런타임 불필요 (self-contained)
 
 **사용 사례:**
 
-- Python/Java/C 프로젝트에 고성능 C# 라이브러리 통합
+- Python/Java/Node.js/C 프로젝트에 고성능 C# 라이브러리 통합
 - 레거시 시스템과의 연동
 - 엣지 디바이스용 경량 라이브러리
 - 게임 엔진 플러그인
 - 임베디드 시스템용 네이티브 모듈
 - JVM 기반 애플리케이션에서 .NET 코드 활용
+- Node.js 백엔드에서 고성능 .NET 모듈 활용
 
 ---
 
