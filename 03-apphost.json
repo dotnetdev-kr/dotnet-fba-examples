@@ -1,0 +1,15 @@
+{
+    "DOTNET_ENVIRONMENT": "Development",
+    "ASPNETCORE_URLS": "http://localhost:18888",
+    "ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL": "http://localhost:18889",
+    "ASPIRE_DASHBOARD_OTLP_HTTP_ENDPOINT_URL": "http://localhost:18890",
+    "ASPIRE_ALLOW_UNSECURED_TRANSPORT": "true",
+
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+            "Microsoft": "Warning",
+            "Microsoft.Hosting.Lifetime": "Information"
+        }
+    }
+}
