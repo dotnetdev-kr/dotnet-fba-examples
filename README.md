@@ -4,6 +4,8 @@
 
 C# File-Based Application (FBA) 기능을 활용한 다양한 예제 코드 모음입니다. .NET 10 이상의 FBA 기능을 사용하여 단일 파일로 작성된 실행 가능한 C# 스크립트 예제들을 제공합니다.
 
+> 발표 자료 같이보기: <https://1drv.ms/p/c/318484c5aad6b73d/EQNehpg4jN5CmVcTh-qDoecBGqBe3gMwuGh3bbHf7EW4yQ?e=M1RstJ>
+
 ## 🎯 FBA란 무엇인가요?
 
 File-Based Application(FBA)은 .NET의 혁신적인 기능으로, 단일 C# 파일을 프로젝트 파일(.csproj) 없이 직접 실행할 수 있게 해줍니다. 이는 다음과 같은 장점을 제공합니다:
